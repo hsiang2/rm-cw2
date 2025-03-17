@@ -1,6 +1,9 @@
 body {
     font-family: "Quicksand", sans-serif;
     stroke-width: 1.5px;
+    background-color: #FFFCEF;
+    color: #222222;
+    padding-top: 50px;
 }
 
 .axis {
@@ -18,6 +21,60 @@ body {
    display: flex;
    flex-direction: column;
    align-items: center;
+}
+
+.legend-container {
+    display: flex;
+    /* flex-wrap: wrap; */
+    gap: 15px;  
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.legend-container-inner {
+    display: flex;
+    gap: 15px; 
+
+    align-items: center;
+
+}
+
+.legend-container-opacity {
+    display: flex;
+    /* gap: 20px;  */
+   margin-left: 20px;
+    align-items: center;
+  
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px; 
+    font-size: 11px;
+}
+
+.legend-rect {
+    width: 15px;
+    height: 15px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.legend-item-opacity {
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+   align-items: center;
+}
+
+.legend-rect-opacity {
+    width: 40px;
+    height: 15px;
+    display: inline-block;
 }
 
 /* .line {

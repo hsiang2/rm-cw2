@@ -18,11 +18,11 @@
         
     const colorScaleDiet = d3.scaleOrdinal()
         .domain(['fish', 'meat50', 'meat100', 'meat', 'vegan', 'veggie'])
-        .range([ "#440154ff", "#21908dff", "#fde725ff", "#a83e32", "#db7323", "#3f7fc4"])
+        .range([ "#89C2D0", "#F9C486", "#E28870", "#EEA279", "#7BAF97", "#B6D089"])
     
     const colorScaleSex = d3.scaleOrdinal()
         .domain(["male", "female"])
-        .range(["blue", "red"]);
+        .range(["#91B5DD", "#DD9192"]);
     
     // **設定 `age_group` 的透明度**
     const opacityScale = d3.scaleOrdinal()
@@ -186,6 +186,7 @@
             .text(d => dietGroupLabels[d.diet_group]) // 顯示 diet_group 名稱
             .style("fill", d => colorScaleDiet(d.diet_group))
             .style("font-size", "10px")
+            .style("font-weight", "bold")
             .attr("alignment-baseline", "middle")
             .on("click", function(event, d) {
                 if (selectedDiet === d.diet_group) {
@@ -222,7 +223,9 @@
             .attr("y", height +9)
             .attr("transform", `rotate(-13, 0, ${height + 9})`)
             .text(d => labels[d])
-            .style("fill", "black")
+            .style("fill", "#222222")
+        
+            drawMainLegend();
 
     }
 
@@ -301,6 +304,7 @@
             .text(`${d.age_group}, ${d.sex}`)
             .style("fill", colorScaleSex(d.sex))
             .style("font-size", "10px")
+            .style("font-weight", "bold")
             .attr("alignment-baseline", "middle");
 
             // svgDetail.selectAll("myLabelsDetail")
@@ -376,7 +380,7 @@
               .attr("y", height +9)
               .attr("transform", `rotate(-13, 0, ${height + 9})`)
               .text(d => labels[d])
-              .style("fill", "black")
+              .style("fill", "#222222")
   
 
         // svgDetail.selectAll(".line")
@@ -407,4 +411,53 @@
         //     .style("stroke-width", 2)
         //     .style("opacity", 0.3)
         //     .style("stroke-dasharray", "5,5");
+        drawDetailLegend();
     }
+
+    function drawMainLegend() {
+        const legendContainer = d3.select("#main-legend");
+    
+        legendContainer.selectAll(".legend-item")
+            .data(Object.entries(dietGroupLabels))
+            .join("div")
+            .attr("class", "legend-item")
+            .html(d => `
+                <span class="legend-rect" style="background:${colorScaleDiet(d[0])}"></span>
+                <span>${d[1]}</span>
+            `);
+    }
+
+    function drawDetailLegend() {
+        const detailLegend = d3.select("#detail-legend");
+        detailLegend.html(""); // **清空舊內容**
+        
+        // **Sex Legend**
+        const sexLegend = detailLegend.append("div").attr("class", "legend-container-inner");
+        sexLegend.append("span").text("Sex:") .style("font-size", "12px");
+    
+        ["male", "female"].forEach(sex => {
+            sexLegend.append("div")
+                .attr("class", "legend-item")
+                .html(`
+                    <span class="legend-rect" style="background:${colorScaleSex(sex)}"></span>
+                    <span>${sex}</span>
+                `);
+        });
+    
+        // **Age Group Legend**
+        const ageLegend = detailLegend.append("div").attr("class", "legend-container-opacity");
+        ageLegend.append("span").text("Age Group:") .style("font-size", "12px").style("margin-right", "15px");
+    
+        const ageGroups = ["20-29", "30-39", "40-49", "50-59", "60-69", "70-79"];
+    
+        ageGroups.forEach(age => {
+            ageLegend.append("div")
+                .attr("class", "legend-item-opacity")
+                .html(`
+                    <span class="legend-rect-opacity" style="background:#222222; opacity:${opacityScale(age)}"></span>
+                    <span>${age}</span>
+                `);
+        });
+    }
+    
+    
