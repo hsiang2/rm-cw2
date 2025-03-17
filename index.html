@@ -5,9 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diet</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="my_dataviz"></div>
+    <div class="container">
+        <div class="container-chart">
+            <h3>Diet Groups</h3>
+            <svg id="main-chart" width="740" height="450"></svg>
+        </div>
+        <div class="container-chart">
+            <h3 id="detail-title"></h3>
+            <svg id="detail-chart" width="720" height="450"></svg>
+            <!-- <div id="tooltip" style="position: absolute; background: white; padding: 5px; border: 1px solid #ccc; border-radius: 5px; visibility: hidden;"></div> -->
+        </div>
+    </div>
     <script src="https://d3js.org/d3.v6.js"></script>
     <script src="js/main.js"></script>
 </body>
