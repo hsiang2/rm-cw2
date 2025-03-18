@@ -5,9 +5,6 @@
     
     // append the svg object to the body of the page
     const svgMain = d3.select("#main-chart")
-        // .append("svg")
-        // .attr("width", width + margin.left + margin.right)
-        // .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform",
             `translate(${margin.left},${margin.top})`);
@@ -24,12 +21,9 @@
         .domain(["male", "female"])
         .range(["#91B5DD", "#DD9192"]);
     
-    // **設定 `age_group` 的透明度**
     const opacityScale = d3.scaleOrdinal()
         .domain(["20-29", "30-39", "40-49", "50-59", "60-69", "70-79"])
-        .range([0.3, 0.45, 0.6, 0.75, 0.9, 1]);  // **年齡越大，透明度越低（更明顯）**
-    
-    
+        .range([0.3, 0.45, 0.6, 0.75, 0.9, 1]);  
 
     const labels = {
         "mean_ghgs": "Mean GHG emissions (kg)",
@@ -64,7 +58,7 @@
         d3.csv("data/diet.csv"),
         d3.csv("data/diet_age_gender.csv")  
     ]).then(([overall, detail]) => {
-// Parse the Data
+        // Parse the Data
         overallData = overall.map(d => ({
             ...d,
             mean_ghgs: +d.mean_ghgs,
@@ -152,7 +146,6 @@
             .selectAll("myPath")
             .data(data)
             .join("path")
-            // .attr("class", "line")
             .attr("class", function (d) { return "line " + d.diet_group } ) // 2 class for each line: 'line' and the group name
             .attr("d",  path)
             .style("fill", "none" )
@@ -168,22 +161,15 @@
                     updateDetailChart(d.diet_group);
                 }
             })
-            // .on("mouseover", function() {
-            //     d3.select(this).style("stroke-width", 3).style("opacity", 1);
-            // })
-            // .on("mouseout", function() {
-            //     d3.select(this).style("stroke-width", 1).style("opacity", 0.7);
-            // })
             .on("mouseover", highlight)
             .on("mouseleave", doNotHighlight );
 
-        // **在右側加上每條線的標籤**
         svgMain.selectAll("myLabels")
             .data(data)
             .join("text")
-            .attr("x", width + 5) // 放在最右側
+            .attr("x", width + 5) 
             .attr("y", d => y[dimensions[dimensions.length - 1]](d[dimensions[dimensions.length - 1]]))
-            .text(d => dietGroupLabels[d.diet_group]) // 顯示 diet_group 名稱
+            .text(d => dietGroupLabels[d.diet_group]) 
             .style("fill", d => colorScaleDiet(d.diet_group))
             .style("font-size", "10px")
             .style("font-weight", "bold")
@@ -198,12 +184,6 @@
                     updateDetailChart(d.diet_group);
                 }
             })
-            // .on("mouseover", function() {
-            //     d3.select(".line").style("stroke-width", 3).style("opacity", 1);
-            // })
-            // .on("mouseout", function() {
-            //     d3.select(".line").style("stroke-width", 1).style("opacity", 0.7);
-            // });
             .on("mouseover", highlight)
             .on("mouseleave", doNotHighlight )
         
@@ -229,31 +209,18 @@
 
     }
 
-    // **繪製細節圖**
     function updateDetailChart(selectedDiet) {
         const filteredData = detailData.filter(d => d.diet_group === selectedDiet);
 
         d3.select("#detail-title").text(`${dietGroupLabels[selectedDiet]} - Age & Sex`)
         .style("color", colorScaleDiet(selected_diet));
-        // const meanValues = {};
-        // dimensions.forEach(dim => {
-        //     meanValues[dim] = d3.mean(filteredData, d => d[dim]);
-        // });
 
         svgDetail.selectAll("*").remove();
-
-          // Here I set the list of dimension manually to control the order of axis:
-        //   dimensions = ["mean_ghgs", "mean_land", "mean_watscar", "mean_eut",
-        //   "mean_ghgs_ch4", "mean_ghgs_n2o", "mean_bio", "mean_watuse", "mean_acid"]
-          
           // For each dimension, I build a linear scale. I store all in a y object
           const y = {}
           for (i in dimensions) {
               dimension = dimensions[i]
               y[dimension] = d3.scaleLinear()
-              //   .domain( [0,8] ) // --> Same axis range for each group
-              // --> different axis range for each group --> 
-              //   .domain( d3.extent(data, d=>d[dimension]) )
               .domain([
                   d3.min(filteredData, d => d[dimension]) * 0.95, 
                   d3.max(filteredData, d => d[dimension]) * 1.05 
@@ -270,9 +237,6 @@
           function path(d) {
               return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
           }
-
-        //    const tooltip = d3.select("#tooltip");
-
           const highlight = function(event, d){
 
             selectedSex = d.sex
@@ -288,15 +252,6 @@
             .style("stroke", colorScaleSex(selectedSex))
             .style("opacity", opacityScale(selectedAge))
 
-            // tooltip.style("visibility", "visible")
-            //     .html(`
-            //         <strong>Age Group:</strong> ${d.age_group} <br>
-            //         <strong>Sex:</strong> ${d.sex} <br>
-            //         <strong>GHG Emissions:</strong> ${d.mean_ghgs.toFixed(2)} kg <br>
-            //         <strong>Land Use:</strong> ${d.mean_land.toFixed(2)} m²
-            //     `)
-            //     .style("left", (event.pageX + 10) + "px")
-            //     .style("top", (event.pageY - 10) + "px");
             svgDetail.append("text")
             .attr("class", "hover-label")
             .attr("x", width + 10)  // **放在最右側**
@@ -306,17 +261,6 @@
             .style("font-size", "10px")
             .style("font-weight", "bold")
             .attr("alignment-baseline", "middle");
-
-            // svgDetail.selectAll("myLabelsDetail")
-            //   .data(filteredData)
-            //   .join("text")
-            //   .attr("x", width + 5) // 放在最右側
-            //   .attr("y", d => y[dimensions[dimensions.length - 1]](d[dimensions[dimensions.length - 1]]))
-            //   .text(d => (`${selectedSex} ${selectedAge}`))
-            //   .style("stroke", colorScaleSex(selectedSex))
-            //   .style("opacity", opacityScale(selectedAge))
-            //   .style("font-size", "10px")
-            //   .attr("alignment-baseline", "middle")
         }
         
         // Unhighlight
@@ -326,7 +270,6 @@
             .style("stroke", d => colorScaleSex(d.sex))
             .style("opacity", d => opacityScale(d.age_group))
 
-            // tooltip.style("visibility", "hidden");
             svgDetail.selectAll(".hover-label").remove();
         }
           
@@ -340,30 +283,9 @@
               .style("fill", "none" )
               .style("stroke", d => colorScaleSex(d.sex))
               .style("opacity", d => opacityScale(d.age_group))
-            //   .on("mouseover", function() {
-            //       d3.select(this).style("stroke-width", 3).style("opacity", 1);
-            //   })
-            //   .on("mouseout", function() {
-            //       d3.select(this).style("stroke-width", 1).style("opacity", 0.7);
-            //   });
-            //   .style("opacity", 0.5)
               .on("mouseover", highlight)
               .on("mouseleave", doNotHighlight )
   
-          // **在右側加上每條線的標籤**
-        //   svgDetail.selectAll("myLabels")
-        //       .data(filteredData)
-        //       .join("text")
-        //       .attr("x", width + 5) // 放在最右側
-        //       .attr("y", d => y[dimensions[dimensions.length - 1]](d[dimensions[dimensions.length - 1]]))
-        //       .text(d => (`${d.sex} ${d.age_group}`))
-        //       .style("stroke", d => colorScaleSex(d.sex))
-        //       .style("opacity", d => opacityScale(d.age_group))
-        //       .style("font-size", "10px")
-        //       .attr("alignment-baseline", "middle")
-        //       .on("mouseover", highlight)
-        //       .on("mouseleave", doNotHighlight )
-          
           // Draw the axis:
           svgDetail.selectAll("myAxis")
               // For each dimension of the dataset I add a 'g' element:
@@ -381,36 +303,7 @@
               .attr("transform", `rotate(-13, 0, ${height + 9})`)
               .text(d => labels[d])
               .style("fill", "#222222")
-  
 
-        // svgDetail.selectAll(".line")
-        //     .data(filteredData)
-        //     .join("path")
-        //     .attr("class", "line")
-        //     .attr("d", path)
-        //     .style("stroke", d => colorScaleSex(d.sex))
-        //     .style("stroke-dasharray", d => lineStyle(d))
-        //     .style("opacity", 0.8)
-        //     .on("mouseover", function(event, d) {
-        //         d3.select(this).style("stroke-width", 3).style("opacity", 1);
-        //         tooltip.style("visibility", "visible")
-        //             .html(`Age: ${d.age_group}<br>Sex: ${d.sex}<br>GHG: ${d.mean_ghgs}`)
-        //             .style("left", (event.pageX + 10) + "px")
-        //             .style("top", (event.pageY - 10) + "px");
-        //     })
-        //     .on("mouseout", function() {
-        //         d3.select(this).style("stroke-width", 1).style("opacity", 0.8);
-        //         tooltip.style("visibility", "hidden");
-        //     });
-
-        // svgDetail.append("path")
-        //     .datum(meanValues)
-        //     .attr("class", "mean-line")
-        //     .attr("d", path)
-        //     .style("stroke", "black")
-        //     .style("stroke-width", 2)
-        //     .style("opacity", 0.3)
-        //     .style("stroke-dasharray", "5,5");
         drawDetailLegend();
     }
 
@@ -429,9 +322,9 @@
 
     function drawDetailLegend() {
         const detailLegend = d3.select("#detail-legend");
-        detailLegend.html(""); // **清空舊內容**
+        detailLegend.html("");
         
-        // **Sex Legend**
+        // Sex Legend
         const sexLegend = detailLegend.append("div").attr("class", "legend-container-inner");
         sexLegend.append("span").text("Sex:") .style("font-size", "12px");
     
@@ -444,7 +337,7 @@
                 `);
         });
     
-        // **Age Group Legend**
+        // Age Group Legend
         const ageLegend = detailLegend.append("div").attr("class", "legend-container-opacity");
         ageLegend.append("span").text("Age Group:") .style("font-size", "12px").style("margin-right", "15px");
     
